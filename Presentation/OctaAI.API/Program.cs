@@ -1,3 +1,4 @@
+using DotnetGeminiSDK;
 using OctaAI.Domain.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddGeminiClient(config =>
+{
+    config.ApiKey = "AIzaSyAX7SA7Nm1iWKNK7HL1buzdWegL7jMR204";
+    config.ImageBaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest";
+    //config.TextBaseUrl = "CURRENTLY_IMAGE_BASE_URL";
+});
 
 //builder.Services.AddIdentity<ApplicationUser, Role>(options =>
 //{
