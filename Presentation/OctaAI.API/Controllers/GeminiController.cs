@@ -1,4 +1,5 @@
-﻿using DotnetGeminiSDK.Client;
+﻿using Centrifugo.AspNetCore.Abstractions;
+using DotnetGeminiSDK.Client;
 using DotnetGeminiSDK.Client.Interfaces;
 using DotnetGeminiSDK.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace OctaAI.API.Controllers
     {
         private readonly IGeminiClient _geminiClient;
 
+
         public GeminiController(IGeminiClient geminiClient)
         {
             _geminiClient = geminiClient;
@@ -27,7 +29,7 @@ namespace OctaAI.API.Controllers
             return Ok(response);
         }
 
-        // POST api/<GeminiController>
+        // TODO : Convert this to a ImagePromtRequestDto
         [HttpPost("PromtText")]
         public async Task<IActionResult> PostTextAsync([FromBody] string value)
         {
@@ -37,7 +39,6 @@ namespace OctaAI.API.Controllers
         }
         
 
-        // POST api/<GeminiController>
         [HttpPost("PromtImage")]
         public async Task<IActionResult> PostImageAsync(IFormFile file)
         {

@@ -1,3 +1,5 @@
+using Centrifugo.AspNetCore.Configuration;
+using Centrifugo.AspNetCore.Extensions;
 using DotnetGeminiSDK;
 using OctaAI.Domain.Identity;
 
@@ -10,12 +12,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 builder.Services.AddGeminiClient(config =>
 {
     config.ApiKey = "AIzaSyAX7SA7Nm1iWKNK7HL1buzdWegL7jMR204";
     config.ImageBaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest";
     //config.TextBaseUrl = "CURRENTLY_IMAGE_BASE_URL";
 });
+
+var centrifugoConfig = new CentrifugoOptions
+{
+    Url = "http://localhost:8000/api",
+    ApiKey = "531794f3-4a1a-4857-ba5b-2483ec24faba", 
+
+};
+
+builder.Services.AddCentrifugoClient(centrifugoConfig);
 
 //builder.Services.AddIdentity<ApplicationUser, Role>(options =>
 //{
