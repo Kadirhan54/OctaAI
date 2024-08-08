@@ -1,21 +1,23 @@
 using Centrifugo.AspNetCore.Configuration;
 using Centrifugo.AspNetCore.Extensions;
 using DotnetGeminiSDK;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using OctaAI.API;
 using OctaAI.Application.Interfaces;
 using OctaAI.Domain.Identity;
 using OctaAI.Infrastructure.Services;
+using OctaAI.Persistence.Contexts.Application;
+using OctaAI.Persistence.Services;
+using Octapull.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowSpecificOrigin",
-//        builder => builder.WithOrigins("http://localhost:4200")
-//                          .AllowAnyHeader()
-//                          .AllowAnyMethod());
-//});
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
@@ -27,11 +29,15 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseInMemoryDatabase("db1");
+});
+
+builder.Services.AddWebServices(builder.Configuration);
 
 builder.Services.AddGeminiClient(config =>
 {
@@ -48,20 +54,6 @@ var centrifugoConfig = new CentrifugoOptions
 
 builder.Services.AddCentrifugoClient(centrifugoConfig);
 builder.Services.AddScoped<ICentrifugoService, CentrifugoService>();
-
-//builder.Services.AddIdentity<ApplicationUser, Role>(options =>
-//{
-//    // User Password Options
-//    options.Password.RequireDigit = false;
-//    options.Password.RequiredLength = 6;
-//    options.Password.RequiredUniqueChars = 0;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireUppercase = false;
-//    // User Username and Email Options
-//    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@$";
-//    options.User.RequireUniqueEmail = true;
-//}).AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 

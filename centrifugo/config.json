@@ -1,0 +1,9 @@
+{
+  "token_hmac_secret_key": "eac49eb1-0a17-4a98-ba0f-f050b081d35d",
+  "admin" : true,
+  "admin_password": "41d6d987-b3d5-44e8-aff4-a1f8c0f949eb",
+  "admin_secret": "4033a560-8c49-4422-b035-70e09b4d431d",
+  "api_key": "531794f3-4a1a-4857-ba5b-2483ec24faba",
+  "allowed_origins": ["http://localhost:3000","http://localhost:30001","http://localhost:4200"],
+  "allow_subscribe_for_client": true
+}

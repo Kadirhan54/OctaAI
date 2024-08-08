@@ -5,7 +5,7 @@ using DotnetGeminiSDK.Model;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using OctaAI.Application.Dtos;
+using OctaAI.Application.Dtos.Gemini;
 using OctaAI.Application.Interfaces;
 using System.Text.Json;
 
