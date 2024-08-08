@@ -2,8 +2,11 @@
 using DotnetGeminiSDK.Client;
 using DotnetGeminiSDK.Client.Interfaces;
 using DotnetGeminiSDK.Model;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using OctaAI.Application.Dtos;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,17 +32,20 @@ namespace OctaAI.API.Controllers
             return Ok(response);
         }
 
-        // TODO : Convert this to a ImagePromtRequestDto
-        [HttpPost("PromtText")]
-        public async Task<IActionResult> PostTextAsync([FromBody] string value)
+        [HttpPost("PromptText")]
+        public async Task<IActionResult> PostTextAsync([FromForm] TextPromptRequestDto textPromptRequestDto)
         {
-            var response = await _geminiClient.TextPrompt(value);
+            var response = await _geminiClient.TextPrompt(textPromptRequestDto.Value);
 
-            return Ok(response.Candidates.FirstOrDefault().Content.Parts.FirstOrDefault().Text.ToString());
+            var responseString = response.Candidates.FirstOrDefault().Content.Parts.FirstOrDefault().Text.ToString();
+
+            var res = JsonSerializer.Serialize(responseString);
+
+            return Ok(res);
         }
-        
 
-        [HttpPost("PromtImage")]
+        // TODO : Convert this to a ImagePromtRequestDto
+        [HttpPost("PromptImage")]
         public async Task<IActionResult> PostImageAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)

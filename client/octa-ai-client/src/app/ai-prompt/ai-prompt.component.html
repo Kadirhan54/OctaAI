@@ -1,0 +1,26 @@
+<div class="ai-prompt-container" ngNativeValidate>
+    <h1>AI Prompt</h1>
+    
+    <form (ngSubmit)="onSubmit()" #aiPromptForm="ngForm" ngNativeValidate>
+      <div class="form-group">
+        <label for="prompt">Enter your prompt:</label>
+        <textarea
+          id="prompt"
+          name="prompt"
+          class="form-control"
+          [(ngModel)]="promptText"
+          required
+          rows="5"
+          placeholder="Type your prompt here..."
+        ></textarea>
+      </div>
+  
+      <button type="submit" class="btn btn-primary" [disabled]="!aiPromptForm.form.valid">Send</button>
+    </form>
+  
+    <div *ngIf="response" class="response-container">
+      <h2>AI Response</h2>
+      <p>{{ response }}</p>
+    </div>
+  </div>
+  
