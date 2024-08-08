@@ -23,7 +23,7 @@
       console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
     }).connect();
 
-    const sub = centrifuge.newSubscription("channel3");
+    const sub = centrifuge.newSubscription("channel");
 
     sub.on('publication', function (ctx) {
       container.innerHTML = ctx.data.value;

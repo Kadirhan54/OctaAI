@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\OctaAI.Application\OctaAI.Application.csproj" />
     <ProjectReference Include="..\..\Core\OctaAI.Domain\OctaAI.Domain.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\OctaAI.Infrastructure\OctaAI.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

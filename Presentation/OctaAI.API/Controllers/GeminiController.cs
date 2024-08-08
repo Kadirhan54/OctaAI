@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OctaAI.Application.Dtos;
+using OctaAI.Application.Interfaces;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,11 +18,13 @@ namespace OctaAI.API.Controllers
     public class GeminiController : ControllerBase
     {
         private readonly IGeminiClient _geminiClient;
+        private readonly ICentrifugoService _centrifugoService;
 
 
-        public GeminiController(IGeminiClient geminiClient)
+        public GeminiController(IGeminiClient geminiClient, ICentrifugoService centrifugoService)
         {
             _geminiClient = geminiClient;
+            _centrifugoService= centrifugoService;
         }
 
         [HttpGet]
@@ -37,12 +40,22 @@ namespace OctaAI.API.Controllers
         {
             var response = await _geminiClient.TextPrompt(textPromptRequestDto.Value);
 
+            if (response?.Candidates == null || response.Candidates.Count == 0)
+            {
+                return BadRequest("No candidates found");
+            }
+
+            // user already subscribes to the channel in the frontend so this is not needed
+            //await _centrifugoService.Subscribe("user", textPromptRequestDto.Channel);
+
             var responseString = response.Candidates.FirstOrDefault().Content.Parts.FirstOrDefault().Text.ToString();
 
             var res = JsonSerializer.Serialize(responseString);
 
-            return Ok(res);
-        }
+            await _centrifugoService.Publish(res, textPromptRequestDto.Channel);
+
+            return Ok();
+        }   
 
         // TODO : Convert this to a ImagePromtRequestDto
         [HttpPost("PromptImage")]

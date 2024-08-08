@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -11,10 +11,11 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  sendPrompt(promptText: string): Observable<any> {
+  sendPrompt(promptText: string, channel:string ): Observable<any> {
 
     const formData = new FormData();
     formData.append('value', promptText); 
+    formData.append('channel', channel); // Add GUID to form data
 
     return this.http.post<any>(`${this.apiUrl}/PromptText`, formData)
       .pipe(
@@ -23,7 +24,6 @@ export class ApiService {
   }
 
   getGeminiInfo(): Observable<any> {
-
     return this.http.get<any>(`${this.apiUrl}`)
       .pipe(
         catchError(this.handleError)
