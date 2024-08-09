@@ -53,9 +53,9 @@ namespace OctaAI.API
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = "apiWithAuthBackend",
                     ValidAudience = "apiWithAuthBackend",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWTSecret").Value)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("eac49eb1-0a17-4a98-ba0f-f050b081d35d")),
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWTSecret").Value)),
                 };
-
                 options.IncludeErrorDetails = true;
             });
 

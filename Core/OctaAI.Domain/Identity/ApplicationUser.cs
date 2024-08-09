@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using OctaAI.Domain.Common;
+using OctaAI.Domain.Entities;
 using OctaAI.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace OctaAI.Domain.Identity
@@ -16,6 +18,7 @@ namespace OctaAI.Domain.Identity
         public DateTimeOffset? BirthDate { get; set; }
         public Gender Gender { get; set; }
         //public string ImageId { get; set; }
+        public ICollection<UserChannel> Channels { get; set; }
 
         public UserSetting UserSetting { get; set; }
 

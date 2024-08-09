@@ -34,7 +34,7 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseInMemoryDatabase("db1");
+    options.UseSqlServer(builder.Configuration.GetSection("MSSQLConnectionString").Value);
 });
 
 builder.Services.AddWebServices(builder.Configuration);

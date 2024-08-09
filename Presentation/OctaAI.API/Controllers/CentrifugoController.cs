@@ -1,6 +1,7 @@
 ﻿using Centrifugo.AspNetCore.Abstractions;
 using Centrifugo.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using OctaAI.Application.Dtos.Centrifugo;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OctaAI.API.Controllers
@@ -14,6 +15,14 @@ namespace OctaAI.API.Controllers
         public CentrifugoController(ICentrifugoClient centrifugoClient)
         {
             _centrifugoClient = centrifugoClient;
+        }
+
+        [HttpPost("Subscribe")]
+        public async Task<IActionResult> Subscribe(CentrifugoSubscribeRequest centrifugoSubscribeRequest)
+        {
+            await _centrifugoClient.Subscribe(centrifugoSubscribeRequest.UserId.ToString(), centrifugoSubscribeRequest.Channel);
+
+            return Ok();
         }
 
         // GET: api/<CentrifugoController>
@@ -42,6 +51,8 @@ namespace OctaAI.API.Controllers
 
             return Ok(channelsInfo);
         }
+
+
 
     }
 }

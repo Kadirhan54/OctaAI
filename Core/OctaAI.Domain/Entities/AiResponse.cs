@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OctaAI.Domain.Entities
+﻿namespace OctaAI.Domain.Entities
 {
     public class AiResponse : EntityBase<Guid>
     {
