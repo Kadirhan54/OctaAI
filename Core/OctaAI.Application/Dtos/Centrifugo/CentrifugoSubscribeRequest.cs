@@ -4,6 +4,6 @@
     {
         public string Channel { get; set; }
 
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

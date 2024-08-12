@@ -25,34 +25,15 @@ export class AiPromptComponent {
   }
 
   ngOnInit() {
-    // this.centrifugeService.getCentrifugeObservable().subscribe((centrifuge) => {
-    //   if (centrifuge) {
-    //     this.centrifuge = centrifuge;
-    //     this.setupCentrifuge();
-    //   }
-    // });
-
-  }
-
-  setupCentrifuge() {
-    if (this.centrifuge) {
-      this.centrifuge.on('connecting', function (ctx) {
-        console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
-      }).on('connected', function (ctx) {
-        console.log(`connected over ${ctx.transport}`);
-      }).on('disconnected', function (ctx) {
-        console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
-      }).connect();
-    }
+    this.centrifuge = this.apiService.getCentrifuge();
+    this.setupCentrifuge();
   }
 
   onSubmit(): void {
     if (this.promptText.trim()) {
       this.channel = uuidv4(); // Generate a new GUID
 
-      this.centrifuge = this.apiService.getCentrifuge();
       console.log(this.centrifuge);
-      this.setupCentrifuge();
 
       this.subscribeToCentrifugo(this.channel);
 
@@ -71,13 +52,32 @@ export class AiPromptComponent {
         }
       });
   }}
+  
+  // for listening centrifugo
+  setupCentrifuge() {
+    if (this.centrifuge) {
+      this.centrifuge.on('connecting', function (ctx) {
+        console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+      }).on('connected', function (ctx) {
+        console.log(`connected over ${ctx.transport}`);
+      }).on('disconnected', function (ctx) {
+        console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+      }).connect();
+    }
+  }
 
-  private subscribeToCentrifugo(channel:string): void {
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('An error occurred:', error.message);
+    return throwError(() => new Error('Something bad happened; please try again later.'));
+  }
+
+  // for listening channel
+  private async subscribeToCentrifugo(channel:string): Promise<void> {
     if (this.centrifuge) {
         // Subscribe to the Centrifugo channel
         const sub = this.centrifuge.newSubscription(channel);
 
-        sub.on('publication', (ctx) => {
+        await sub.on('publication', (ctx) => {
             document.title = ctx.data.value;
             this.response = ctx.data.value;
         }).on('subscribing', function (ctx) {
@@ -89,10 +89,4 @@ export class AiPromptComponent {
         }).subscribe();
     }
   }
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error('An error occurred:', error.message);
-    return throwError(() => new Error('Something bad happened; please try again later.'));
-  }
-  
 }

@@ -35,15 +35,15 @@ namespace OctaAI.API.Controllers
             var result = await _identityService.SignInUser(user, loginRequestDto.Password);
             if (!result) return Unauthorized("Invalid password");
 
-            //var userWithChannels = _applicationDbContext.Users
-            //    .Where(u => u.Id == user.Id)
-            //    .Include(u => u.Channels)
-            //    .FirstOrDefault();
+            var userWithChannels = _applicationDbContext.Users
+                .Where(u => u.Id == user.Id)
+                .Include(u => u.Channels)
+                .FirstOrDefault();
 
-            //foreach (var channel in userWithChannels.Channels)
-            //{
-            //    _centrifugoService.Subscribe(userWithChannels.Id.ToString(), channel.ChannelId.ToString());
-            //}
+            foreach (var channel in userWithChannels.Channels)
+            {
+                _centrifugoService.Subscribe(userWithChannels.Id.ToString(), channel.ChannelId.ToString());
+            }
 
             return new LoginResponseDto
             {

@@ -34,19 +34,12 @@ export class LoginComponent {
       this.apiService.login(username, password).pipe(
         catchError(this.handleError) 
       ).subscribe({
-        // next: () => {
-        //   this.centrifugeService.createCentrifuge();
-        // },
-        error: (err: any) => {
-          console.error('An error occurred in component:', err);
-        },
         complete: () => {
-          this.apiService.createCentrifuge();
+          // On successful login, you can navigate to another page
+          this.router.navigate(['/prompt']);
+          console.log('Login complete');
         }
       });
-
-      // On successful login, you can navigate to another page
-      this.router.navigate(['/prompt']);
     }
   }
 

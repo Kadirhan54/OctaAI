@@ -6,5 +6,7 @@
 
         // Channel that haves Guid type will be used for Centrifugo channel
         public string Channel { get; set; }
+
+        public string UserId { get; set; }
     }
 }

@@ -1,0 +1,6 @@
+<nav class="navbar">
+    <a href="/" routerLink="/" class="nav-item">Home</a>
+    <a href="/login" routerLink="/login" class="nav-item" *ngIf="!isUserLoggedIn()">Login</a>
+    <a href="#" class="nav-item" *ngIf="isUserLoggedIn()" (click)="logout()">Logout</a>
+  </nav>
+  

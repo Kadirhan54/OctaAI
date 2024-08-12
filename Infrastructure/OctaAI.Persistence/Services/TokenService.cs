@@ -52,33 +52,34 @@ namespace Octapull.Infrastructure.Services
                     new Claim(JwtRegisteredClaimNames.Sub,  user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-                    //new Claim(ClaimTypes.Name, user.UserName),
-                    //new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email),
                 };
 
-                //var userWithChannels = applicationDbContext.Users
-                //    .Where(u => u.Id == user.Id)
-                //    .Include(u => u.Channels)
-                //    .FirstOrDefault();
+                var userWithChannels = applicationDbContext.Users
+                    .Where(u => u.Id == user.Id)
+                    .Include(u => u.Channels)
+                    .FirstOrDefault();
 
 
-                //if (userWithChannels?.Channels != null && userWithChannels.Channels.Any())
-                //{
-                //    // Get channel names as a list of strings
-                //    var channelNames = userWithChannels.Channels.Select(c => c.ChannelId).ToList();
+                if (userWithChannels?.Channels != null && userWithChannels.Channels.Any())
+                {
+                    // Get channel names as a list of strings
+                    var channelNames = userWithChannels.Channels.Select(c => c.ChannelId).ToList();
 
-                //    // Serialize the list of channel names to JSON
-                //    var channelNamesJson = JsonConvert.SerializeObject(channelNames);
+                    // Serialize the list of channel names to JSON
+                    var channelNamesJson = JsonConvert.SerializeObject(channelNames);
 
-                //    // Add the JSON string as a claim
-                //    claims.Add(new Claim("channels", channelNamesJson));
-                //}
-                //else
-                //{
-                //    // Add an empty JSON array as a claim if there are no channels
-                //    claims.Add(new Claim("channels", "[]"));
-                //}
+                    // Add the JSON string as a claim
+                    claims.Add(new Claim("channels2", channelNamesJson));
+                }
+                else
+                {
+                    // Add an empty JSON array as a claim if there are no channels
+                    claims.Add(new Claim("channels2", "[]"));
+                }
 
+                return claims;
 
                 //if (userWithChannels?.Channels != null && userWithChannels.Channels.Any())
                 //{
@@ -93,7 +94,6 @@ namespace Octapull.Infrastructure.Services
                 //    claims.Add(new("channels", ""));
                 //}
 
-                return claims;
             }
             catch (Exception e)
             {
