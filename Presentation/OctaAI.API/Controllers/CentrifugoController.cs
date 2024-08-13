@@ -1,9 +1,11 @@
 ﻿using Centrifugo.AspNetCore.Abstractions;
 using Centrifugo.AspNetCore.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using OctaAI.Application.Dtos.Centrifugo;
+using OctaAI.Application.Dtos.Gemini;
 using OctaAI.Application.Interfaces;
 using OctaAI.Domain.Entities;
 using OctaAI.Persistence.Contexts.Application;
@@ -11,6 +13,7 @@ using OctaAI.Persistence.Contexts.Application;
 
 namespace OctaAI.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CentrifugoController : ControllerBase
@@ -77,12 +80,29 @@ namespace OctaAI.API.Controllers
             return Ok();
         }
 
-        [HttpGet("GetChannel")]
-        public async Task<IActionResult> GetChannelInfo()
+        [HttpGet("Channels")]
+        public async Task<IActionResult> GetUserChannels(string id)
         {
             //var channelsInfo = await _centrifugoService.Channels();
 
-            return Ok();
+            var userWithChannels = _applicationDbContext.Users
+                .Where(u => u.Id == Guid.Parse(id))
+                .Include(u => u.Channels)
+                .FirstOrDefault();
+
+            List<string> channelNames = new ();
+
+            for (int i = 0; i < userWithChannels.Channels.Count; i++)
+            {
+                var userChannel = userWithChannels.Channels.ElementAt(i);
+                var channelName = userChannel.ChannelId.ToString();
+
+                channelNames.Add(channelName);
+            }
+
+
+            return Ok(channelNames);
+
         }
 
 

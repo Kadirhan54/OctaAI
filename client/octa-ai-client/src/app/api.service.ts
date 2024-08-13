@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Centrifuge } from 'centrifuge';
 import { jwtDecode } from 'jwt-decode';
+import { StateService } from './state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class ApiService {
   private channels: string[] = [];
   private userId :string = "";
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private stateService: StateService) {}
 
   sendPrompt(promptText: string, channel: string): Observable<any> {
     const formData = new FormData();
@@ -127,7 +128,7 @@ export class ApiService {
 
       sub.on('publication', (ctx) => {
           document.title = ctx.data.value;
-          this.response = ctx.data.value;
+          this.stateService.updateChannelData(channel, ctx.data.value);
       }).on('subscribing', function (ctx) {
           console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
       }).on('subscribed', function (ctx) {
@@ -136,6 +137,32 @@ export class ApiService {
           console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
       }).subscribe();
     }
+  }
+
+  getCentrifuge(): Centrifuge | null {
+    return this.centrifuge;
+  }
+
+  getChannels(): Observable<string[]> {
+    if (!this.userId) {
+      throw new Error('User ID is not set');
+    }
+    console.log('userId:', this.userId);
+    const url = `${this.apiUrl}/centrifugo/channels?id=${encodeURIComponent(this.userId)}`;
+    return this.http.get<string[]>(url);
+  }
+
+  getUserId(): string | null {
+    return this.userId;
+  }
+
+  setUserId(userId: string): void {
+    this.userId = userId;
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError(error);
   }
 
   // async subscribeToChannel(channel: string): Promise<void> {
@@ -160,12 +187,5 @@ export class ApiService {
   //   await sub.subscribe();
   // }
 
-  getCentrifuge(): Centrifuge | null {
-    return this.centrifuge;
-  }
 
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
-    return throwError(error);
-  }
 }

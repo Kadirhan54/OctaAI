@@ -41,7 +41,7 @@ builder.Services.AddWebServices(builder.Configuration);
 
 builder.Services.AddGeminiClient(config =>
 {
-    config.ApiKey = "AIzaSyAX7SA7Nm1iWKNK7HL1buzdWegL7jMR204";
+    config.ApiKey = "AIzaSyCXlVH6LDQcXhgQ5d1G4V48wGRb_nrN6Jo";
     config.ImageBaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest";
     //config.TextBaseUrl = "CURRENTLY_IMAGE_BASE_URL";
 });

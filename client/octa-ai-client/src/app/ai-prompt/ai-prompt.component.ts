@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subscription, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Centrifuge } from 'centrifuge';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-ai-prompt',
@@ -19,31 +20,51 @@ export class AiPromptComponent {
   promptText: string = '';
   response: string | null = null;
   centrifuge: Centrifuge | null = null;
-  channel: string = '';
+  promptChannel: string = '';
+  channels: string[] = [];
+  channelData: { channelName: string, data: string } | null = null;
+  channelDataMap: { [channelName: string]: string } = {};
+  subscription: Subscription;
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService,private stateService: StateService) {
+    this.subscription = new Subscription();
   }
 
   ngOnInit() {
     this.centrifuge = this.apiService.getCentrifuge();
     this.setupCentrifuge();
+
+    this.apiService.getChannels().subscribe((channels: string[]) => {
+      this.channels = channels;
+      this.apiService.subscribeToChannels(this.channels);
+    });
+
+    this.subscription = this.stateService.channelData$.subscribe(data => {
+      if (data.channelName) {
+        console.log('Channel data received:', data);
+        this.channelDataMap[data.channelName] = data.data;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   onSubmit(): void {
     if (this.promptText.trim()) {
-      this.channel = uuidv4(); // Generate a new GUID
+      this.promptChannel = uuidv4(); // Generate a new GUID
 
       console.log(this.centrifuge);
 
-      this.subscribeToCentrifugo(this.channel);
+      this.subscribeToCentrifugo(this.promptChannel);
 
-      this.apiService.sendPrompt(this.promptText, this.channel).pipe(
+      this.apiService.sendPrompt(this.promptText, this.promptChannel).pipe(
         // map((res: any) => res as string),
         catchError(this.handleError) 
       ).subscribe({
-        // next: () => {
-        //   // this.response = JSON.stringify(res); // Convert the response to a string for display
-        // },
         error: (err: any) => {
           console.error('An error occurred in component:', err);
         },
