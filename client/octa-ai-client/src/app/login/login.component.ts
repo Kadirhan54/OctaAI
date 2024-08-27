@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../api.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -17,12 +17,27 @@ export class LoginComponent {
   loginForm: FormGroup = new FormGroup({});
   centrifuge: Centrifuge | null = null;
 
-  constructor(private apiService : ApiService  ,private fb: FormBuilder, private router: Router) {   }
+  constructor(
+    private apiService : ApiService  ,
+    private fb: FormBuilder, 
+    private router: Router,
+    private route: ActivatedRoute, // Inject ActivatedRoute to read URL params
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
+    });
+
+    // Check for token in URL query params
+    this.route.queryParams.subscribe(params => {
+      const token = params['token'];
+      if (token) {
+        localStorage.setItem('token', token!);
+        this.router.navigate(['/prompt']); // Redirect to your protected route or homepage
+        console.log('Login complete with Google OAuth');
+      }
     });
   }
 
@@ -41,6 +56,10 @@ export class LoginComponent {
         }
       });
     }
+  }
+
+  loginWithGoogle(): void {
+    window.location.href = 'https://localhost:7227/api/Auth/login-google'; // Redirect to Google login URL
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

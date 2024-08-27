@@ -25,6 +25,8 @@ namespace OctaAI.Application.Interfaces
 
         Task<(Result Result, string UserId)> CreateUserAsync(RegisterRequestDto createUserRequestDto);
 
+        Task<Result> CreateUserAsync(ApplicationUser applicationUser);
+
         Task<Result> DeleteUserAsync(string userId);
     }
 }

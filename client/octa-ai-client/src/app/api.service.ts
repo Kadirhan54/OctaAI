@@ -30,7 +30,6 @@ export class ApiService {
     .pipe(
       catchError(this.handleError)
     );
-
   }
 
   // sendSubscription(channel: string): Observable<any> {

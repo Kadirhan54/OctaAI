@@ -86,8 +86,15 @@ namespace OctaAI.Persistence.Services
             return (result.ToApplicationResult(), user.Id.ToString());
         }
 
-        public async Task<bool> IsInRoleAsync(string userId, string role)
+        public async Task<Result> CreateUserAsync(ApplicationUser applicationUser)
         {
+            var result = await _userManager.CreateAsync(applicationUser);
+
+            return result.ToApplicationResult();
+        }
+
+        public async Task<bool> IsInRoleAsync(string userId, string role)
+        { 
             var user = await _userManager.FindByIdAsync(userId);
 
             return user != null && await _userManager.IsInRoleAsync(user, role);

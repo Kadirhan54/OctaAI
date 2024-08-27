@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OctaAI.Application.Dtos.Account.Request;
 using OctaAI.Application.Dtos.Account.Response;
 using OctaAI.Application.Interfaces;
 using OctaAI.Persistence.Contexts.Application;
+using System.Security.Claims;
+using OctaAI.Domain.Identity;
 
 
 namespace OctaAI.API.Controllers
@@ -90,6 +95,43 @@ namespace OctaAI.API.Controllers
                 Token = token
             };
 
+        }
+
+        [HttpGet("login-google")]
+        public IActionResult LoginGoogle()
+        {
+            string redirectUrl = Url.Action("GoogleResponse", "Auth");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("google-response")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            if (!authenticateResult.Succeeded)
+                return BadRequest(); // Handle failure scenario
+
+            // Find or create Identity user
+            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var user = await _identityService.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                var name = authenticateResult.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
+                var surname = authenticateResult.Principal.FindFirst(ClaimTypes.Surname)?.Value;
+
+                user = new ApplicationUser { UserName = email, Email = email,Id=Guid.NewGuid(), FirstName= name ,LastName= surname };
+                await _identityService.CreateUserAsync(user);
+            }
+
+            // Generate JWT token here
+            var token = _tokenService.CreateToken(user);
+
+            // Redirect to Angular with the token as a query parameter
+            string redirectUrl = $"http://localhost:4200/login?token={token}";
+            return Redirect(redirectUrl);
         }
     }
 }

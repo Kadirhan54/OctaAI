@@ -1,5 +1,6 @@
 ﻿using DotnetGeminiSDK.Client.Interfaces;
 using DotnetGeminiSDK.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using System.Text.Json;
 
 namespace OctaAI.API.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class GeminiController : ControllerBase
